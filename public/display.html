@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>名片即時交換 · Horizon AI</title>
+<link rel="stylesheet" href="/style.css" />
+<style>
+  body { overflow: hidden; }
+  body::before {
+    /* Stronger ink pattern on the big screen */
+    inset: auto -5% -10% -10%;
+    width: 60%; height: 80%;
+    background: radial-gradient(ellipse at 30% 60%, rgba(143,212,176,0.35), transparent 55%),
+                radial-gradient(ellipse at 55% 35%, rgba(91,168,130,0.22), transparent 60%),
+                radial-gradient(circle at 15% 85%, rgba(47,125,91,0.12), transparent 50%);
+    filter: blur(30px);
+  }
+  body::after {
+    content: '';
+    position: fixed; top: -10%; right: -10%;
+    width: 50%; height: 50%;
+    background: radial-gradient(ellipse at 70% 30%, rgba(143,212,176,0.18), transparent 60%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stage {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 440px 1fr;
+    gap: 56px;
+    padding: 56px 64px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .left {
+    display: flex; flex-direction: column; gap: 32px; justify-content: space-between;
+    height: 100%;
+    overflow: hidden;
+  }
+  .feed {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* hide scrollbar but keep functionality */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-right: 8px;
+    /* soft fade at top/bottom so rows feel like they enter/exit gracefully */
+    mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 40px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 40px), transparent 100%);
+  }
+  .feed::-webkit-scrollbar { display: none; }
+  .logo-block {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .logo {
+    font-size: 40px; font-weight: 700; letter-spacing: 2px;
+    color: var(--text);
+  }
+  .logo-sub {
+    font-size: 11px; letter-spacing: 4px; color: var(--muted);
+    text-transform: uppercase;
+  }
+  .tagline {
+    color: #3a3a3a; font-size: 18px; line-height: 1.8;
+    margin-top: 24px;
+    max-width: 380px;
+  }
+  .tagline .accent { color: var(--accent-deep); font-weight: 500; }
+
+  .counter {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    display: flex; flex-direction: column; gap: 6px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+  .counter .label {
+    color: var(--muted); font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  }
+  .counter .num {
+    font-size: 72px; font-weight: 300; color: var(--text); line-height: 1;
+    margin: 8px 0;
+    font-feature-settings: "tnum";
+  }
+  .counter .num-suffix {
+    display: inline-block; font-size: 16px; color: var(--muted); margin-left: 6px;
+    font-weight: 400; letter-spacing: 1px;
+  }
+  .pulse {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: var(--accent-deep); font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .pulse::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(91,168,130,.5); animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(91,168,130,.5); }
+    50% { box-shadow: 0 0 0 10px rgba(91,168,130,0); }
+  }
+
+  .feed { overflow-y: hidden; position: relative; }
+  .feed-title {
+    font-size: 13px; font-weight: 500; letter-spacing: 4px;
+    margin-bottom: 28px; color: var(--muted);
+    text-transform: uppercase;
+  }
+  .card-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .card-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 28px;
+    display: grid; grid-template-columns: 56px 1fr auto; gap: 22px; align-items: center;
+    animation: slideIn .7s cubic-bezier(.2,.9,.3,1.2) both;
+    box-shadow: 0 2px 8px rgba(0,0,0,.03);
+    transition: all .3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(40px) scale(.96); }
+    to { opacity: 1; transform: none; }
+  }
+  .card-row.fresh {
+    border-color: var(--accent);
+    box-shadow: 0 8px 32px rgba(91,168,130,0.18);
+    background: linear-gradient(180deg, rgba(143,212,176,0.06), var(--surface));
+  }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 500; color: #fff;
+    letter-spacing: 1px;
+  }
+  .info .name { font-size: 19px; font-weight: 600; color: var(--text); letter-spacing: .3px; }
+  .info .sub { color: var(--muted); font-size: 14px; margin-top: 4px; letter-spacing: .2px; }
+  .status {
+    font-size: 12px; padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--border); color: var(--muted);
+    letter-spacing: .5px; white-space: nowrap;
+  }
+  .status.sent {
+    background: rgba(75,154,116,.08);
+    border-color: rgba(75,154,116,.3);
+    color: var(--accent-deep);
+  }
+  .status.failed {
+    background: rgba(193,87,63,.06);
+    border-color: rgba(193,87,63,.3);
+    color: var(--danger);
+  }
+
+  .empty {
+    color: var(--muted); padding: 60px 0;
+    text-align: center; font-size: 15px; letter-spacing: 1px;
+  }
+  .empty::before {
+    content: '—'; display: block; margin-bottom: 12px;
+    color: var(--accent); letter-spacing: 4px;
+  }
+</style>
+</head>
+<body>
+  <main class="stage">
+    <aside class="left">
+      <div>
+        <div class="logo-block">
+          <div class="logo">HORIZON AI</div>
+          <div class="logo-sub">Powered by Konst</div>
+        </div>
+        <div class="tagline">
+          在展場上，每張名片都被<span class="accent">好好接住</span>。<br>
+          AI 即時辨識，自動歸檔，親切問候隨後送達。
+        </div>
+      </div>
+      <div class="counter">
+        <div class="label">今日已交換</div>
+        <div class="num"><span id="count">0</span><span class="num-suffix">張名片</span></div>
+        <div class="pulse">Live sync</div>
+      </div>
+    </aside>
+    <section class="feed">
+      <div class="feed-title">Recent Exchanges · 最新交換</div>
+      <div class="card-list" id="list"></div>
+    </section>
+  </main>
+
+  <script src="/display.js"></script>
+</body>
+</html>

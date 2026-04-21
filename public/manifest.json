@@ -1,0 +1,12 @@
+{
+  "name": "Horizon AI 名片交換",
+  "short_name": "名片交換",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fafaf8",
+  "theme_color": "#5ba882",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "tradeshow-card-app",
+  "version": "0.1.0",
+  "description": "Trade-show business card scanner. Scans card -> Claude OCR -> configurable storage (Lark Bitable first) -> auto greeting email via Resend. PWA + Express.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "multer": "^1.4.5-lts.1",
+    "resend": "^4.0.1"
+  }
+}
