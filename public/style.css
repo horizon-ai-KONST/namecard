@@ -315,9 +315,11 @@ body::before {
 .recent-status.failed { background: rgba(193,87,63,.14); color: var(--danger); }
 
 .btn.small {
-  padding: 8px 12px; font-size: 13px; border-radius: 8px;
+  width: auto; min-width: 0;
+  padding: 8px 14px; font-size: 13px; border-radius: 8px;
   background: var(--accent); color: white; border: none;
   cursor: pointer; font-family: inherit; flex-shrink: 0;
+  white-space: nowrap;
 }
 .btn.small:disabled { opacity: .6; cursor: default; }
 .btn.small.done { background: var(--success); }
