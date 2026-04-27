@@ -1,6 +1,54 @@
-// Tradeshow card scanner — PWA frontend state machine.
+// Scanner page — reads mode/event from Console (localStorage) and adapts UI.
 // States: capture -> processing -> confirm -> done
 
+const LS_KEY_CONTEXT = 'cardapp.context.v1';
+
+function loadContext() {
+  try {
+    const raw = localStorage.getItem(LS_KEY_CONTEXT);
+    return raw ? JSON.parse(raw) : { mode: 'daily' };
+  } catch { return { mode: 'daily' }; }
+}
+const ctx = loadContext();
+
+// ---- Apply context to UI ----
+const MODE_LABELS = {
+  tradeshow: '展場名片交換',
+  daily: '日常紀錄',
+  visit: '客戶拜訪',
+};
+document.getElementById('modeLabel').textContent = MODE_LABELS[ctx.mode] || '名片掃描';
+
+const banner = document.getElementById('contextBanner');
+if (ctx.mode === 'tradeshow' && ctx.event_name) {
+  banner.innerHTML = `🎪 <b>${escapeHtml(ctx.event_name)}</b> · 掃描後將自動寄 greeting 信`;
+  banner.classList.add('show', 'tradeshow');
+} else if (ctx.mode === 'visit') {
+  banner.innerHTML = `🤝 客戶拜訪模式 · 不自動寄信，可加會議備註`;
+  banner.classList.add('show', 'visit');
+} else {
+  banner.innerHTML = `📇 日常紀錄模式 · 不自動寄信`;
+  banner.classList.add('show', 'daily');
+}
+
+// Show visit_note field only for visit mode
+if (ctx.mode === 'visit') {
+  document.getElementById('visitNoteField').hidden = false;
+}
+
+// Hint banner: only "請客人親自確認" makes sense at a tradeshow.
+const confirmHint = document.getElementById('confirmHint');
+if (ctx.mode !== 'tradeshow') {
+  confirmHint.innerHTML = '⚠️ AI 偶爾會看錯相似的字，請確認 <b>姓名</b> 與 <b>Email</b> 是否正確';
+}
+
+// Email field: required only for tradeshow (we need to send the greeting)
+const emailInput = document.querySelector('input[name="email"]');
+if (emailInput && ctx.mode === 'tradeshow') {
+  emailInput.required = true;
+}
+
+// ---- State machine ----
 const steps = {
   capture: document.getElementById('step-capture'),
   processing: document.getElementById('step-processing'),
@@ -83,21 +131,44 @@ btnSubmit.addEventListener('click', async (e) => {
   if (!form.reportValidity()) return;
   const data = Object.fromEntries(new FormData(form).entries());
 
+  // separate visit_note out of card payload — it goes into context
+  const visit_note = data.visit_note || '';
+  delete data.visit_note;
+
+  const context = {
+    mode: ctx.mode,
+    event_name: ctx.event_name || '',
+    visit_note,
+  };
+
   btnSubmit.disabled = true;
   btnSubmit.textContent = '傳送中…';
   try {
     const fd = new FormData();
     fd.append('card', JSON.stringify(data));
+    fd.append('context', JSON.stringify(context));
     if (currentFile) fd.append('image', currentFile);
     const res = await fetch('/api/archive', { method: 'POST', body: fd });
-    if (!res.ok) throw new Error((await res.json()).error || 'Archive failed');
-    doneSub.textContent = `感謝 ${data.name_zh || data.name_en || ''}！問候信稍後會寄到 ${data.email}`;
+    const respData = await res.json();
+    if (!res.ok) throw new Error(respData.error || 'Archive failed');
+
+    if (ctx.mode === 'tradeshow' && data.email) {
+      doneSub.textContent = `感謝 ${data.name_zh || data.name_en || ''}！問候信稍後會寄到 ${data.email}`;
+    } else if (ctx.mode === 'visit') {
+      doneSub.textContent = `已歸檔 ${data.name_zh || data.name_en || ''}（含拜訪備註）`;
+    } else {
+      doneSub.textContent = `已歸檔 ${data.name_zh || data.name_en || ''}`;
+    }
     show('done');
   } catch (e) {
     alert(`送出失敗：${e.message}`);
   } finally {
     btnSubmit.disabled = false;
-    btnSubmit.textContent = '送出並交換名片';
+    btnSubmit.textContent = '送出';
     btnSubmit.classList.remove('loading');
   }
 });
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}

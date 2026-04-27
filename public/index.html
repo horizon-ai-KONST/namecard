@@ -5,76 +5,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#fafaf8" />
-<title>名片交換 · Horizon AI</title>
+<title>Console · Horizon AI 名片夾</title>
 <link rel="manifest" href="/manifest.json" />
 <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <main id="app">
-    <!-- STEP 1: Capture -->
-    <section id="step-capture" class="step active">
-      <header class="topbar">
-        <div class="brand">HORIZON AI<span class="divider">·</span>名片交換</div>
-      </header>
-      <div class="capture-area">
-        <div class="card-frame" id="frame">
-          <div class="frame-inner">
-            <div class="frame-hint">將名片放入框內拍攝</div>
-            <div class="corner tl"></div><div class="corner tr"></div>
-            <div class="corner bl"></div><div class="corner br"></div>
-          </div>
-        </div>
-        <input id="fileInput" type="file" accept="image/*" capture="environment" hidden />
+  <main id="console">
+    <header class="topbar">
+      <div class="brand">HORIZON AI<span class="divider">·</span>名片夾 Console</div>
+    </header>
+
+    <!-- VIEW: Mode picker -->
+    <section id="view-modes" class="view active">
+      <h1 class="view-title">今天要做什麼？</h1>
+      <p class="view-sub">選擇一個情境開始掃描名片</p>
+
+      <div class="mode-grid">
+        <button class="mode-card" data-mode="tradeshow">
+          <div class="mode-emoji">🎪</div>
+          <div class="mode-name">展場名片交換</div>
+          <div class="mode-desc">掃描後自動發 greeting 信，並在展場螢幕即時顯示</div>
+        </button>
+
+        <button class="mode-card" data-mode="daily">
+          <div class="mode-emoji">📇</div>
+          <div class="mode-name">日常紀錄</div>
+          <div class="mode-desc">純粹歸檔到 Lark，不發信，事後可手動補發</div>
+        </button>
+
+        <button class="mode-card" data-mode="visit">
+          <div class="mode-emoji">🤝</div>
+          <div class="mode-name">客戶拜訪</div>
+          <div class="mode-desc">歸檔 + 加會議備註，方便日後 follow up</div>
+        </button>
       </div>
-      <div class="actions">
-        <button id="btnCapture" class="btn primary">拍攝名片</button>
+
+      <div class="console-actions">
+        <button id="btnRecent" class="link-btn">📋 看歷史名片 / 補發 greeting →</button>
       </div>
+
       <div class="watermark">Powered by Konst</div>
     </section>
 
-    <!-- STEP 2: Processing -->
-    <section id="step-processing" class="step">
-      <div class="center-col">
-        <div class="spinner"></div>
-        <p class="status-text">AI 正在辨識名片資訊…</p>
-      </div>
-    </section>
-
-    <!-- STEP 3: Confirm -->
-    <section id="step-confirm" class="step">
-      <header class="topbar">
-        <button id="btnBack" class="iconbtn">←</button>
-        <div class="brand">確認資訊</div>
+    <!-- VIEW: Event setup (only for tradeshow mode) -->
+    <section id="view-event" class="view">
+      <header class="topbar inner">
+        <button class="iconbtn" data-back-modes>←</button>
+        <div class="brand">展場資訊</div>
       </header>
-      <div class="preview">
-        <img id="previewImg" alt="名片" />
+
+      <h1 class="view-title">這場展會是？</h1>
+      <p class="view-sub">展會名稱會寫進每一張名片，方便日後 filter</p>
+
+      <div class="event-input-wrap">
+        <input id="eventInput" type="text" placeholder="例：COMPUTEX 2026" autocomplete="off" />
       </div>
-      <div class="confirm-hint">⚠️ 請客人親自確認 <b>姓名</b> 與 <b>Email</b>（AI 偶爾會看錯相似的字）</div>
-      <form id="form" class="form">
-        <label data-key="name_zh" class="critical">姓名 <span class="tag">請再確認</span><input name="name_zh" /></label>
-        <label data-key="name_en">英文名 <input name="name_en" /></label>
-        <label data-key="company">公司 <input name="company" required /></label>
-        <label data-key="title">職稱 <input name="title" /></label>
-        <label data-key="email" class="critical">Email <span class="tag">請再確認</span><input name="email" type="email" required /></label>
-        <label data-key="phone">電話 <input name="phone" /></label>
-        <input type="hidden" name="role_category" />
-      </form>
-      <div class="actions">
-        <button id="btnSubmit" class="btn primary">送出並交換名片</button>
+
+      <div id="eventHistory" class="event-history">
+        <!-- recent events populated here -->
+      </div>
+
+      <div class="actions vertical">
+        <button id="btnStartTradeshow" class="btn primary" disabled>開始掃描</button>
+        <a class="btn secondary" href="/display.html" target="_blank">在另一螢幕打開展場顯示牆 ↗</a>
       </div>
     </section>
 
-    <!-- STEP 4: Done -->
-    <section id="step-done" class="step">
-      <div class="center-col">
-        <div class="check-icon">✓</div>
-        <h2 class="done-title">交換完成</h2>
-        <p class="done-sub" id="doneSub">問候信稍後會寄到您的信箱</p>
-        <button id="btnNext" class="btn primary">下一位客人</button>
+    <!-- VIEW: Recent records / resend -->
+    <section id="view-recent" class="view">
+      <header class="topbar inner">
+        <button class="iconbtn" data-back-modes>←</button>
+        <div class="brand">歷史名片</div>
+      </header>
+
+      <p class="view-sub center">點任何一張未寄信的名片，可以立即補發 greeting</p>
+
+      <div id="recentList" class="recent-list">
+        <div class="empty">載入中…</div>
       </div>
     </section>
   </main>
 
-  <script src="/app.js"></script>
+  <script src="/console.js"></script>
 </body>
 </html>

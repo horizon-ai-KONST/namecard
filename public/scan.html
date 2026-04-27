@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#fafaf8" />
+<title>名片掃描 · Horizon AI</title>
+<link rel="manifest" href="/manifest.json" />
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main id="app">
+    <!-- STEP 1: Capture -->
+    <section id="step-capture" class="step active">
+      <header class="topbar">
+        <a href="/" class="iconbtn back-home" aria-label="回 Console">←</a>
+        <div class="brand">HORIZON AI<span class="divider">·</span><span id="modeLabel">名片掃描</span></div>
+      </header>
+      <div class="context-banner" id="contextBanner"></div>
+      <div class="capture-area">
+        <div class="card-frame" id="frame">
+          <div class="frame-inner">
+            <div class="frame-hint">將名片放入框內拍攝</div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+        <input id="fileInput" type="file" accept="image/*" capture="environment" hidden />
+      </div>
+      <div class="actions">
+        <button id="btnCapture" class="btn primary">拍攝名片</button>
+      </div>
+      <div class="watermark">Powered by Konst</div>
+    </section>
+
+    <!-- STEP 2: Processing -->
+    <section id="step-processing" class="step">
+      <div class="center-col">
+        <div class="spinner"></div>
+        <p class="status-text">AI 正在辨識名片資訊…</p>
+      </div>
+    </section>
+
+    <!-- STEP 3: Confirm -->
+    <section id="step-confirm" class="step">
+      <header class="topbar">
+        <button id="btnBack" class="iconbtn">←</button>
+        <div class="brand">確認資訊</div>
+      </header>
+      <div class="preview">
+        <img id="previewImg" alt="名片" />
+      </div>
+      <div class="confirm-hint" id="confirmHint">⚠️ 請客人親自確認 <b>姓名</b> 與 <b>Email</b>（AI 偶爾會看錯相似的字）</div>
+      <form id="form" class="form">
+        <label data-key="name_zh" class="critical">姓名 <span class="tag">請再確認</span><input name="name_zh" /></label>
+        <label data-key="name_en">英文名 <input name="name_en" /></label>
+        <label data-key="company">公司 <input name="company" required /></label>
+        <label data-key="title">職稱 <input name="title" /></label>
+        <label data-key="email" class="critical">Email <span class="tag">請再確認</span><input name="email" type="email" /></label>
+        <label data-key="phone">電話 <input name="phone" /></label>
+        <label data-key="visit_note" id="visitNoteField" hidden>會議 / 拜訪備註<textarea name="visit_note" rows="3" placeholder="例：對 Flexion API 有興趣，下週 follow up"></textarea></label>
+        <input type="hidden" name="role_category" />
+      </form>
+      <div class="actions">
+        <button id="btnSubmit" class="btn primary">送出</button>
+      </div>
+    </section>
+
+    <!-- STEP 4: Done -->
+    <section id="step-done" class="step">
+      <div class="center-col">
+        <div class="check-icon">✓</div>
+        <h2 class="done-title">已完成</h2>
+        <p class="done-sub" id="doneSub"></p>
+        <button id="btnNext" class="btn primary">下一張</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

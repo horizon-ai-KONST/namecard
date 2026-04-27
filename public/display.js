@@ -11,7 +11,20 @@ const state = {
   freshId: null, // record_id that should show the green "fresh" glow
 };
 
+let lastSignature = null;
+
+function signature() {
+  return JSON.stringify({
+    f: state.freshId,
+    n: state.items.length,
+    ids: state.items.slice(0, 50).map((x) => [x.record_id, x.status, x.card?.name_zh, x.card?.name_en, x.card?.company, x.card?.title, x.card?.email]),
+  });
+}
+
 function render() {
+  const sig = signature();
+  if (sig === lastSignature) return; // nothing changed → don't touch the DOM
+  lastSignature = sig;
   if (state.items.length === 0) {
     listEl.innerHTML = '<div class="empty">等候第一位客人…</div>';
     countEl.textContent = '0';
