@@ -5,14 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#fafaf8" />
-<title>Console · Horizon AI 名片夾</title>
+<title>Console · 名片夾</title>
 <link rel="manifest" href="/manifest.json" />
 <link rel="stylesheet" href="/style.css" />
+<script>
+  // Inline boot — apply cached flavor immediately to prevent brand flash.
+  // After /api/config loads, console.js refreshes the cache.
+  (function () {
+    try {
+      const f = sessionStorage.getItem('cardapp.flavor');
+      if (f) document.documentElement.dataset.flavor = f;
+    } catch (e) {}
+  })();
+</script>
+<style>
+  /* Hide body until brand config is applied — avoids wrong-brand flash. */
+  body { opacity: 0; }
+  body.ready { opacity: 1; transition: opacity .15s ease; }
+</style>
 </head>
 <body>
   <main id="console">
     <header class="topbar">
-      <div class="brand"><span data-brand-name>HORIZON AI</span><span class="divider">·</span><span data-brand-tagline>名片夾</span> Console</div>
+      <div class="brand"><span data-brand-name></span><span class="divider">·</span><span data-brand-tagline></span> Console</div>
     </header>
 
     <!-- VIEW: Mode picker -->
@@ -43,9 +58,10 @@
 
       <div class="console-actions">
         <button id="btnRecent" class="link-btn">📋 看歷史名片 / 補發 greeting →</button>
+        <a id="lnkBitable" class="link-btn" href="#" target="_blank" rel="noopener" hidden>🗂 在 Lark 多維表格打開 ↗</a>
       </div>
 
-      <div class="watermark" data-brand-watermark>Powered by Konst</div>
+      <div class="watermark" data-brand-watermark></div>
     </section>
 
     <!-- VIEW: Event setup (only for tradeshow mode) -->

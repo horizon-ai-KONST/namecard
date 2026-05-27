@@ -19,8 +19,11 @@ function show(name) {
   try {
     const r = await fetch('/api/config');
     const cfg = await r.json();
-    // Set flavor on <html> so CSS palette switches
+    // Set flavor on <html> so CSS palette switches; cache it for next page load
+    // (the inline <head> script reads this to avoid the brand flash).
     document.documentElement.dataset.flavor = cfg.flavor;
+    try { sessionStorage.setItem('cardapp.flavor', cfg.flavor); } catch (e) {}
+
     // Brand text
     document.querySelectorAll('[data-brand-name]').forEach((el) => { el.textContent = cfg.brand.name; });
     document.querySelectorAll('[data-brand-tagline]').forEach((el) => { el.textContent = cfg.brand.tagline; });
@@ -42,8 +45,19 @@ function show(name) {
     if (!cfg.has_display_screen) {
       document.querySelectorAll('[data-needs-display]').forEach((el) => { el.hidden = true; });
     }
+    // Bitable entrance link (env: BITABLE_VIEW_URL)
+    if (cfg.bitable_url) {
+      const lnk = document.getElementById('lnkBitable');
+      if (lnk) {
+        lnk.href = cfg.bitable_url;
+        lnk.hidden = false;
+      }
+    }
   } catch (e) {
     console.warn('[config] failed to load', e);
+  } finally {
+    // Reveal the page (was held at opacity 0 to prevent brand flash)
+    document.body.classList.add('ready');
   }
 })();
 

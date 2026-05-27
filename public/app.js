@@ -9,10 +9,14 @@ const LS_KEY_CONTEXT = 'cardapp.context.v1';
     const r = await fetch('/api/config');
     const cfg = await r.json();
     document.documentElement.dataset.flavor = cfg.flavor;
+    try { sessionStorage.setItem('cardapp.flavor', cfg.flavor); } catch (e) {}
     document.querySelectorAll('[data-brand-name]').forEach((el) => { el.textContent = cfg.brand.name; });
     document.querySelectorAll('[data-brand-watermark]').forEach((el) => { el.textContent = cfg.brand.watermark; });
     document.title = `名片掃描 · ${cfg.brand.name}`;
   } catch {}
+  finally {
+    document.body.classList.add('ready');
+  }
 })();
 
 function loadContext() {

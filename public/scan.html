@@ -5,9 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#fafaf8" />
-<title>名片掃描 · Horizon AI</title>
+<title>名片掃描</title>
 <link rel="manifest" href="/manifest.json" />
 <link rel="stylesheet" href="/style.css" />
+<script>
+  (function () {
+    try {
+      const f = sessionStorage.getItem('cardapp.flavor');
+      if (f) document.documentElement.dataset.flavor = f;
+    } catch (e) {}
+  })();
+</script>
+<style>
+  body { opacity: 0; }
+  body.ready { opacity: 1; transition: opacity .15s ease; }
+</style>
 </head>
 <body>
   <main id="app">
@@ -15,7 +27,7 @@
     <section id="step-capture" class="step active">
       <header class="topbar">
         <a href="/" class="iconbtn back-home" aria-label="回 Console">←</a>
-        <div class="brand"><span data-brand-name>HORIZON AI</span><span class="divider">·</span><span id="modeLabel">名片掃描</span></div>
+        <div class="brand"><span data-brand-name></span><span class="divider">·</span><span id="modeLabel">名片掃描</span></div>
       </header>
       <div class="context-banner" id="contextBanner"></div>
       <div class="capture-area">
@@ -31,7 +43,7 @@
       <div class="actions">
         <button id="btnCapture" class="btn primary">拍攝名片</button>
       </div>
-      <div class="watermark" data-brand-watermark>Powered by Konst</div>
+      <div class="watermark" data-brand-watermark></div>
     </section>
 
     <!-- STEP 2: Processing -->
