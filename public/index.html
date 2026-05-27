@@ -12,13 +12,14 @@
 <body>
   <main id="console">
     <header class="topbar">
-      <div class="brand">HORIZON AI<span class="divider">·</span>名片夾 Console</div>
+      <div class="brand"><span data-brand-name>HORIZON AI</span><span class="divider">·</span><span data-brand-tagline>名片夾</span> Console</div>
     </header>
 
     <!-- VIEW: Mode picker -->
     <section id="view-modes" class="view active">
       <h1 class="view-title">今天要做什麼？</h1>
       <p class="view-sub">選擇一個情境開始掃描名片</p>
+      <p class="brand-subtagline" data-brand-subtagline hidden></p>
 
       <div class="mode-grid">
         <button class="mode-card" data-mode="tradeshow">
@@ -44,7 +45,7 @@
         <button id="btnRecent" class="link-btn">📋 看歷史名片 / 補發 greeting →</button>
       </div>
 
-      <div class="watermark">Powered by Konst</div>
+      <div class="watermark" data-brand-watermark>Powered by Konst</div>
     </section>
 
     <!-- VIEW: Event setup (only for tradeshow mode) -->
@@ -67,7 +68,7 @@
 
       <div class="actions vertical">
         <button id="btnStartTradeshow" class="btn primary" disabled>開始掃描</button>
-        <a class="btn secondary" href="/display.html" target="_blank">在另一螢幕打開展場顯示牆 ↗</a>
+        <a class="btn secondary" href="/display.html" target="_blank" data-needs-display>在另一螢幕打開展場顯示牆 ↗</a>
       </div>
     </section>
 

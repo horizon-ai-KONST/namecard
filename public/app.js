@@ -3,6 +3,18 @@
 
 const LS_KEY_CONTEXT = 'cardapp.context.v1';
 
+// Apply brand config from backend
+(async () => {
+  try {
+    const r = await fetch('/api/config');
+    const cfg = await r.json();
+    document.documentElement.dataset.flavor = cfg.flavor;
+    document.querySelectorAll('[data-brand-name]').forEach((el) => { el.textContent = cfg.brand.name; });
+    document.querySelectorAll('[data-brand-watermark]').forEach((el) => { el.textContent = cfg.brand.watermark; });
+    document.title = `名片掃描 · ${cfg.brand.name}`;
+  } catch {}
+})();
+
 function loadContext() {
   try {
     const raw = localStorage.getItem(LS_KEY_CONTEXT);

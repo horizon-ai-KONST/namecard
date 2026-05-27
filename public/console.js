@@ -14,6 +14,39 @@ function show(name) {
   views[name].classList.add('active');
 }
 
+// ---- Apply config from backend (brand + which modes to show) ----
+(async function applyConfig() {
+  try {
+    const r = await fetch('/api/config');
+    const cfg = await r.json();
+    // Set flavor on <html> so CSS palette switches
+    document.documentElement.dataset.flavor = cfg.flavor;
+    // Brand text
+    document.querySelectorAll('[data-brand-name]').forEach((el) => { el.textContent = cfg.brand.name; });
+    document.querySelectorAll('[data-brand-tagline]').forEach((el) => { el.textContent = cfg.brand.tagline; });
+    document.querySelectorAll('[data-brand-watermark]').forEach((el) => { el.textContent = cfg.brand.watermark; });
+    document.title = `Console · ${cfg.brand.name} ${cfg.brand.tagline}`;
+    // Subtagline (Konst's "Where Efficiency Leads..." line)
+    if (cfg.brand.subtagline) {
+      document.querySelectorAll('[data-brand-subtagline]').forEach((el) => {
+        el.textContent = cfg.brand.subtagline;
+        el.hidden = false;
+      });
+    }
+    // Hide mode cards that aren't enabled
+    const enabled = new Set(cfg.modes);
+    document.querySelectorAll('.mode-card[data-mode]').forEach((card) => {
+      if (!enabled.has(card.dataset.mode)) card.hidden = true;
+    });
+    // Hide "open display screen" link if this flavor has no display
+    if (!cfg.has_display_screen) {
+      document.querySelectorAll('[data-needs-display]').forEach((el) => { el.hidden = true; });
+    }
+  } catch (e) {
+    console.warn('[config] failed to load', e);
+  }
+})();
+
 // ---- Mode pick ----
 document.querySelectorAll('.mode-card').forEach((btn) => {
   btn.addEventListener('click', () => {

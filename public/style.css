@@ -14,6 +14,40 @@
   --danger: #c1573f;
   --border: rgba(15,15,15,0.08);
   --shadow: 0 4px 20px rgba(47,125,91,0.08);
+  --blob-1: rgba(143,212,176,0.25);
+  --blob-2: rgba(91,168,130,0.18);
+}
+
+/* ============================================================
+   Konst flavor — burnt orange / amber
+   Activated when /api/config sets data-flavor="konst" on <html>
+   ============================================================ */
+:root[data-flavor="konst"] {
+  --surface-2: #faf0e6;
+  --accent: #d97847;          /* Konst burnt orange */
+  --accent-2: #f0a878;        /* lighter amber */
+  --accent-deep: #a8542a;     /* deep terracotta */
+  --success: #b86332;
+  --shadow: 0 4px 20px rgba(168,84,42,0.12);
+  --blob-1: rgba(240,168,120,0.30);
+  --blob-2: rgba(217,120,71,0.18);
+}
+:root[data-flavor="konst"] .brand {
+  font-family: "Inter", -apple-system, sans-serif;
+  letter-spacing: 1px;
+}
+:root[data-flavor="konst"] [data-brand-name] {
+  color: var(--accent-deep);
+  font-weight: 700;
+}
+:root[data-flavor="konst"] .brand-subtagline {
+  font-family: "Times New Roman", "Noto Serif TC", serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--accent-deep);
+  opacity: .75;
+  margin-top: 4px;
+  line-height: 1.5;
 }
 html, body {
   height: 100%;
@@ -29,8 +63,8 @@ body::before {
   content: '';
   position: fixed; inset: auto 0 -20% -10%;
   width: 70%; height: 70%;
-  background: radial-gradient(circle at 30% 70%, rgba(143,212,176,0.25), transparent 60%),
-              radial-gradient(circle at 60% 40%, rgba(91,168,130,0.18), transparent 55%);
+  background: radial-gradient(circle at 30% 70%, var(--blob-1), transparent 60%),
+              radial-gradient(circle at 60% 40%, var(--blob-2), transparent 55%);
   pointer-events: none;
   z-index: 0;
   filter: blur(20px);
