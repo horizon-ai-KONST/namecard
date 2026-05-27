@@ -1,4 +1,5 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
 :root {
   /* Horizon AI booth palette — white, soft green ink, warm wood hint */
   --bg: #fafaf8;
