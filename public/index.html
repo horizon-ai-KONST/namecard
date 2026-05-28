@@ -57,6 +57,7 @@
       </div>
 
       <div class="console-actions">
+        <button id="btnBatch" class="link-btn">📥 批次匯入既有名片 →</button>
         <button id="btnRecent" class="link-btn">📋 看歷史名片 / 補發 greeting →</button>
         <a id="lnkBitable" class="link-btn" href="#" target="_blank" rel="noopener" hidden>🗂 在 Lark 多維表格打開 ↗</a>
       </div>
@@ -85,6 +86,34 @@
       <div class="actions vertical">
         <button id="btnStartTradeshow" class="btn primary" disabled>開始掃描</button>
         <a class="btn secondary" href="/display.html" target="_blank" data-needs-display>在另一螢幕打開展場顯示牆 ↗</a>
+      </div>
+    </section>
+
+    <!-- VIEW: Batch import (existing namecards) -->
+    <section id="view-batch" class="view">
+      <header class="topbar inner">
+        <button class="iconbtn" data-back-modes>←</button>
+        <div class="brand">批次匯入</div>
+      </header>
+
+      <h1 class="view-title">一次傳多張既有名片</h1>
+      <p class="view-sub">適合處理累積已久的紙本名片。每張會自動 OCR 並寫入 Lark，不發信、不出現在展場顯示牆。低信心欄位會在備註標註，方便事後到 Lark 修正。</p>
+
+      <div class="batch-picker">
+        <input id="batchFileInput" type="file" accept="image/*" multiple hidden />
+        <button id="btnPickFiles" class="btn primary">🖼 選取多張圖片</button>
+        <div class="batch-hint">建議單次 ≤ 20 張，避免處理過久</div>
+      </div>
+
+      <div id="batchProgress" class="batch-progress" hidden>
+        <div class="batch-summary">
+          <span id="batchCountDone">0</span> / <span id="batchCountTotal">0</span> 已處理
+          <span class="batch-status-pill" id="batchOverall">處理中…</span>
+        </div>
+        <div id="batchList" class="batch-list"></div>
+        <div class="actions">
+          <button id="btnBatchDone" class="btn primary" hidden>完成，回首頁</button>
+        </div>
       </div>
     </section>
 

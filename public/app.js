@@ -78,7 +78,9 @@ function show(name) {
 }
 
 const fileInput = document.getElementById('fileInput');
+const fileInputGallery = document.getElementById('fileInputGallery');
 const btnCapture = document.getElementById('btnCapture');
+const btnGallery = document.getElementById('btnGallery');
 const btnBack = document.getElementById('btnBack');
 const btnSubmit = document.getElementById('btnSubmit');
 const btnNext = document.getElementById('btnNext');
@@ -89,6 +91,7 @@ const doneSub = document.getElementById('doneSub');
 let currentFile = null;
 
 btnCapture.addEventListener('click', () => fileInput.click());
+btnGallery.addEventListener('click', () => fileInputGallery.click());
 btnBack.addEventListener('click', () => show('capture'));
 btnNext.addEventListener('click', () => {
   currentFile = null;
@@ -97,8 +100,7 @@ btnNext.addEventListener('click', () => {
   show('capture');
 });
 
-fileInput.addEventListener('change', async () => {
-  const file = fileInput.files?.[0];
+async function handleFile(file) {
   if (!file) return;
   currentFile = file;
   previewImg.src = URL.createObjectURL(file);
@@ -117,7 +119,10 @@ fileInput.addEventListener('change', async () => {
     fillForm({});
     show('confirm');
   }
-});
+}
+
+fileInput.addEventListener('change', () => handleFile(fileInput.files?.[0]));
+fileInputGallery.addEventListener('change', () => handleFile(fileInputGallery.files?.[0]));
 
 function fillForm(card) {
   const setVal = (name, v) => {
